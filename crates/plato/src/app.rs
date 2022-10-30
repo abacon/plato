@@ -589,7 +589,7 @@ pub fn run() -> Result<(), Error> {
             Event::Suspend => {
                 if context.settings.auto_power_off > 0 {
                     context.rtc.iter().for_each(|rtc| {
-                        rtc.set_alarm(context.settings.auto_power_off)
+                        rtc.set_alarm_minutes(context.settings.auto_power_off)
                            .map_err(|e| eprintln!("Can't set alarm: {:#}.", e))
                            .ok();
                     });

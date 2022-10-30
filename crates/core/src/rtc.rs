@@ -55,8 +55,8 @@ impl Rtc {
         }
     }
 
-    pub fn set_alarm(&self, days: u8) -> Result<i32, Error> {
-        let wt = Utc::now() + Duration::days(days as i64);
+    pub fn set_alarm(&self, minutes: u8, hours: u8, days: u8) -> Result<i32, Error> {
+        let wt = Utc::now() + Duration::days(days as i64) + Duration::minutes(minutes as i64) + Duration::hours(hours as i64);
         let rwa = RtcWkalrm {
             enabled: 1,
             pending: 0,
@@ -75,11 +75,18 @@ impl Rtc {
         unsafe { rtc_write_alarm(self.0.as_raw_fd(), &rwa).map_err(|e| e.into()) }
     }
 
+    pub fn set_alarm_minutes(&self, minutes: u8) -> Result<i32, Error> {
+        return self.set_alarm(minutes, 0, 0);
+    }
+
+    pub fn set_alarm_days(&self, days: u8) -> Result<i32, Error> {
+        return self.set_alarm(0, 0, days);
+    }
+
     pub fn is_alarm_enabled(&self) -> Result<bool, Error> {
         self.alarm().map(|rwa| rwa.enabled == 1)
     }
 
     pub fn disable_alarm(&self) -> Result<i32, Error> {
-        unsafe { rtc_disable_alarm(self.0.as_raw_fd()).map_err(|e| e.into()) }
-    }
+        unsafe { rtc_disable_alarm(self.0.as_raw_fd()).map_err(|e| e.into()) } }
 }
